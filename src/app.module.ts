@@ -6,19 +6,21 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { getMongoDbCondig } from './config/mongo.config';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
+import { GenreModule } from './genre/genre.module';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot(),
-    TypegooseModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: getMongoDbCondig,
-    }),
-    AuthModule,
-    UserModule,
-  ],
-  controllers: [AppController],
-  providers: [AppService],
+	imports: [
+		ConfigModule.forRoot(),
+		TypegooseModule.forRootAsync({
+			imports: [ConfigModule],
+			inject: [ConfigService],
+			useFactory: getMongoDbCondig,
+		}),
+		AuthModule,
+		UserModule,
+		GenreModule,
+	],
+	controllers: [AppController],
+	providers: [AppService],
 })
 export class AppModule {}
