@@ -15,3 +15,7 @@ import { path } from 'app-root-path';
 	controllers: [FileController],
 })
 export class FileModule {}
+
+const goodsPrices: Record<string, number> = {};
+goodsPrices.apple = 7.7;
+goodsPrices.banana = 10;

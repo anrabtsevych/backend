@@ -12,9 +12,11 @@ export class GenreService {
 	) {}
 
 	async bySlug(slug: string) {
-		return this.genreModel
+		const genre = await this.genreModel
 			.findOne({ slug: new RegExp('^' + slug + '$', 'i') })
 			.exec();
+		if (!genre) throw new NotFoundException('Genre not found');
+		return genre;
 	}
 
 	async getAll(searchTerm?: string) {
