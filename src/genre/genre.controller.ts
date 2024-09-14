@@ -16,7 +16,7 @@ import { Auth } from 'src/auth/decorators/auth.decorator';
 import { IdValidationPipe } from 'src/pipes/id.validation.pipe';
 import { CreateGenreDto } from './dto/create-genre.dto';
 
-@Controller('genre')
+@Controller('genres')
 export class GenreController {
 	constructor(private readonly genreService: GenreService) {}
 
