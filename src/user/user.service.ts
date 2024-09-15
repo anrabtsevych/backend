@@ -4,6 +4,7 @@ import { InjectModel } from 'nestjs-typegoose';
 import { UserModel } from './user.model';
 import { UpdateUserDto } from './dto/user.dto';
 import { genSalt, hash } from 'bcryptjs';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class UserService {
@@ -55,5 +56,22 @@ export class UserService {
 
 	async delete(id: string) {
 		return this.userModel.findByIdAndDelete(id).exec();
+	}
+
+	async toggleFavorites(movieId: Types.ObjectId, user: UserModel) {
+		const { _id, favorites } = user;
+		await this.userModel.findByIdAndUpdate(_id, {
+			favorites: favorites.includes(movieId)
+				? favorites.filter((id) => String(id) !== String(movieId))
+				: [...favorites, movieId],
+		});
+	}
+
+	async getFavoriteMovies(_id: Types.ObjectId) {
+		return this.userModel
+			.findById(_id, 'favorites')
+			.populate({ path: 'favorites', populate: { path: 'genres' } })
+			.exec()
+			.then((data) => data.favorites);
 	}
 }
