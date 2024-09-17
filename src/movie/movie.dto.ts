@@ -28,9 +28,6 @@ export class UpdateMovieDto {
 	title: string;
 
 	@IsString()
-	description: string;
-
-	@IsString()
 	slug: string;
 
 	@IsObject()

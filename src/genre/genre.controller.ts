@@ -25,7 +25,7 @@ export class GenreController {
 		return await this.genreService.bySlug(slug);
 	}
 
-	@Get('/collections')
+	@Get('collections')
 	async getCollections() {
 		return await this.genreService.getCollections();
 	}

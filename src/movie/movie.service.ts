@@ -4,6 +4,7 @@ import { ModelType } from '@typegoose/typegoose/lib/types';
 import { InjectModel } from 'nestjs-typegoose';
 import { UpdateMovieDto } from './movie.dto';
 import { Types } from 'mongoose';
+import { GenreIdsDto } from './dto/genreIds.dto';
 
 @Injectable()
 export class MovieService {
@@ -48,14 +49,12 @@ export class MovieService {
 	}
 
 	async byActor(actorId: Types.ObjectId) {
-		const actor = await this.movieModel
-			.find({ actors: new RegExp('^' + actorId + '$', 'i') })
-			.exec();
+		const actor = await this.movieModel.find({ actors: actorId }).exec();
 		if (!actor) throw new NotFoundException('Movies not found');
 		return actor;
 	}
 
-	async byGenres(genreIds: Types.ObjectId[]) {
+	async byGenres(genreIds: GenreIdsDto) {
 		const movie = await this.movieModel
 			.find({ genres: { $in: genreIds } })
 			.exec();
@@ -79,9 +78,9 @@ export class MovieService {
 
 	async updateCountOpened(slug: string) {
 		const updatedDoc = await this.movieModel
-			.findByIdAndUpdate({ slug }, { $inc: { countOpened: 1 } })
+			.findOneAndUpdate({ slug }, { $inc: { countOpened: 1 } }, { new: true })
 			.exec();
-		if (!updatedDoc) throw new NotFoundException('Movies not found');
+		if (!updatedDoc) throw new NotFoundException('Movie not found');
 		return updatedDoc;
 	}
 
@@ -90,7 +89,6 @@ export class MovieService {
 			bigPoster: '',
 			poster: '',
 			title: '',
-			description: '',
 			slug: '',
 			actors: [],
 			genres: [],
