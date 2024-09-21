@@ -5,11 +5,13 @@ import { InjectModel } from 'nestjs-typegoose';
 import { UpdateMovieDto } from './movie.dto';
 import { Types } from 'mongoose';
 import { GenreIdsDto } from './dto/genreIds.dto';
+import { TelegramService } from 'src/telegram/telegram.service';
 
 @Injectable()
 export class MovieService {
 	constructor(
-		@InjectModel(MovieModel) private readonly movieModel: ModelType<MovieModel>
+		@InjectModel(MovieModel) private readonly movieModel: ModelType<MovieModel>,
+		private readonly telegramService: TelegramService
 	) {}
 
 	async getAllMovies() {
@@ -60,6 +62,18 @@ export class MovieService {
 			.exec();
 		if (!movie) throw new NotFoundException('Movies not found');
 		return movie;
+	}
+
+	async updateRating(id: Types.ObjectId, newRating: number) {
+		return this.movieModel
+			.findByIdAndUpdate(
+				id,
+				{
+					rating: newRating,
+				},
+				{ new: true }
+			)
+			.exec();
 	}
 
 	async byId(_id: string) {
@@ -118,5 +132,19 @@ export class MovieService {
 		const deletedDoc = await this.movieModel.findByIdAndDelete(id).exec();
 		if (!deletedDoc) throw new NotFoundException('Movie not found');
 		return deletedDoc;
+	}
+
+	async sendNotification(dto: UpdateMovieDto) {
+		// if (process.env.NODE_ENV !== 'development')
+		// await this.telegramService.sendPhoto(dto.poster);
+		await this.telegramService.sendPhoto(
+			'https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d'
+		);
+		const msg = `<b>${dto.title}</b>`;
+		await this.telegramService.sendMessage(msg, {
+			reply_markup: {
+				inline_keyboard: [[{ url: '', text: 'Go to watch' }]],
+			},
+		});
 	}
 }
